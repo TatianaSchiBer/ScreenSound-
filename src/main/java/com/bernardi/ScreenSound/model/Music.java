@@ -8,17 +8,23 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "musicas")
-public class Musica {
+@Table(name = "musics")
+public class Music {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id; 
 	
-	private String titulo;
+	private String title;
 	
 	@ManyToOne
-	private Artista artista;
+	private Artist artist;
+
+	public Music() {}
+	
+	public Music(String song) {
+		this.title = song;
+	}
 
 	public Long getId() {
 		return id;
@@ -28,28 +34,28 @@ public class Musica {
 		this.id = id;
 	}
 
-	public String getTitulo() {
-		return titulo;
+	public String getTitle() {
+		return title;
 	}
 
-	public void setTitulo(String titulo) {
-		this.titulo = titulo;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
-	public Artista getArtista() {
-		return artista;
+	public Artist getArtist() {
+		return artist;
 	}
 
-	public void setArtista(Artista artista) {
-		this.artista = artista;
+	public void setArtist(Artist artist) {
+		this.artist = artist;
 	}
 
 	@Override
 	public String toString() {
-		return "Musica = " + titulo + ", artista = " + artista ;
+		return "Music = " + title + ", artist = " + artist.getName() ;
 	}
-	
-	
+
+
 	
 
 }

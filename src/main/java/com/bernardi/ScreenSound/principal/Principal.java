@@ -1,10 +1,24 @@
 package com.bernardi.ScreenSound.principal;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
+
+import com.bernardi.ScreenSound.model.Artist;
+import com.bernardi.ScreenSound.model.Music;
+import com.bernardi.ScreenSound.model.TypeArtist;
+import com.bernardi.ScreenSound.repository.ArtistRepository;
+import com.bernardi.ScreenSound.service.ChatGPT;
 
 public class Principal {
 
-	private Scanner leitura = new Scanner(System.in);
+	private Scanner scanner = new Scanner(System.in);
+	
+	private ArtistRepository repository;
+
+	public Principal(ArtistRepository repository) {
+		this.repository = repository;
+	}
 
 	public void showMenu() {
 		
@@ -27,15 +41,15 @@ public class Principal {
 					""";
 			
 			System.out.println(menu);
-			option = leitura.nextInt();
-			leitura.nextLine();
+			option = scanner.nextInt();
+			scanner.nextLine();
 			
 			switch (option) {
 			case 1: 
 				registerArtist();
 				break;
 			case 2:
-				registerArtist();
+				registerSong();
 				break;
 			case 3:
 				listSongs();
@@ -59,23 +73,58 @@ public class Principal {
 
 }
 
+
 	private void searcheArtistData() {
-		// TODO Auto-generated method stub
+		System.out.println("Searching for data about which artist? ");
+		var name = scanner.nextLine();
+		var response = ChatGPT.getData(name);
+		System.out.println(response);
 		
 	}
 
 	private void searchSongsByArtist() {
-		// TODO Auto-generated method stub
+		System.out.println("Search for songs by which artist?");
+		var name = scanner.nextLine();
+		List<Music> musics = repository.searchSongsByArtist(name);
+		musics.forEach(System.out::println);
 		
 	}
 
 	private void listSongs() {
-		// TODO Auto-generated method stub
+		List<Artist> artists = repository.findAll();
+		artists.forEach(a -> a.getMusics().forEach(System.out::println));
 		
 	}
 
+	private void registerSong() {
+		System.out.println("Which artist's music to record?");
+		var name = scanner.nextLine();
+		Optional<Artist> artist = repository.findByNameContainingIgnoreCase(name);
+		if(artist.isPresent()) {
+			System.out.println("Enter the name of the song: ");
+			var song = scanner.nextLine();
+			Music music = new Music(song);
+			music.setArtist(artist.get());
+			artist.get().getMusics().add(music);
+			repository.save(artist.get());
+		}else {
+			System.out.println("Artist not found!");
+		}
+	}
+
 	private void registerArtist() {
-		// TODO Auto-generated method stub
+		var registerNew = "Y";
 		
+		while(registerNew.equalsIgnoreCase("y")) {
+		System.out.println("Enter the name of the Artist you want to register: ");
+		var name = scanner.nextLine();
+		System.out.println("Enter the type of Artist: (Solo, Duo or Band)");
+		var type = scanner.nextLine();
+		TypeArtist typeArtist = TypeArtist.valueOf(type.toUpperCase());
+		Artist artist = new Artist(name, typeArtist);
+		repository.save(artist);
+		System.out.println("Do you want to register a new artist? (Y/N)");
+		registerNew = scanner.nextLine();
+		}
 	}
 }

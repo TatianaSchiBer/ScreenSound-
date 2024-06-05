@@ -1,11 +1,11 @@
 package com.bernardi.ScreenSound.model;
 
-public enum TipoArtista {
+public enum TypeArtist {
 	
 	SOLO, 
 	
-	DUPLA,
+	DUO,
 	
-	BANDA;
+	BAND;
 
 }
